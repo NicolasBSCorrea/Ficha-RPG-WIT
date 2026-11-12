@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RPG WIT · Criador de Fichas</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--bg2:#f4f1e6;--card:#fff;--tx:#111;--mut:#555;--gr:#1f7a4d;--gr2:#145a38;--au:#b8921f;--au2:#d4af37;--bd:#d9d2b8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0b0b;--bg2:#141a15;--card:#151515;--tx:#f5f5f5;--mut:#aaa;--gr:#2fa56b;--gr2:#1f7a4d;--au:#d4af37;--au2:#f0cf64;--bd:#33301f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b0b0b;--bg2:#141a15;--card:#151515;--tx:#f5f5f5;--mut:#aaa;--gr:#2fa56b;--gr2:#1f7a4d;--au:#d4af37;--au2:#f0cf64;--bd:#33301f;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--tx);font-family:Georgia,'Times New Roman',serif;line-height:1.5}
+h1,h2,h3{font-weight:700;margin:0 0 .5rem;color:var(--au)}
+.wrap{max-width:1000px;margin:0 auto;padding:1rem}
+header.top{background:#0b0b0b;border-bottom:3px solid var(--au2);color:#fff}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.logo{font-size:1.5rem;font-weight:700;letter-spacing:.1em;color:#d4af37}
+.logo span{color:#2fa56b}
+.hero{text-align:center;padding:2.5rem 1rem 1rem;background:linear-gradient(180deg,var(--bg2),var(--bg))}
+.hero .logo{font-size:clamp(2.4rem,9vw,4rem)}
+.hero p{color:var(--mut);margin:.25rem 0 0}
+.d4{display:inline-block;width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-bottom:38px solid var(--au2);margin-bottom:.5rem}
+.card{background:var(--card);border:1px solid var(--bd);border-top:3px solid var(--gr);border-radius:8px;padding:1.25rem;margin:1rem 0}
+.auth{max-width:420px;margin:1rem auto}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:1rem;flex-wrap:wrap}
+.tabs button{flex:1;background:none;border:0;padding:.7rem .4rem;font:inherit;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent}
+.tabs button.on{color:var(--au);border-bottom-color:var(--au2);font-weight:700}
+label{display:block;font-size:.9rem;margin:.6rem 0 .2rem;color:var(--mut)}
+input,textarea{width:100%;padding:.6rem;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit}
+input:focus,textarea:focus{outline:2px solid var(--au2)}
+.btn{background:var(--gr);color:#fff;border:1px solid var(--gr2);padding:.6rem 1.1rem;border-radius:6px;font:inherit;font-weight:700;cursor:pointer;margin-top:.8rem}
+.btn:hover{background:var(--gr2)}
+.btn.au{background:var(--au2);color:#111;border-color:var(--au)}
+.btn.au:hover{background:var(--au)}
+.btn.ghost{background:none;color:var(--au2);border-color:var(--au2);margin:0}
+.btn.sm{padding:.3rem .6rem;margin:0;font-size:.85rem}
+.btn.red{background:#8a1c1c;border-color:#5e1212}
+.msg{min-height:1.2rem;margin-top:.6rem;font-size:.9rem;color:#c0392b}
+.msg.ok{color:var(--gr)}
+.hide{display:none!important}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.tile{border:1px solid var(--bd);border-left:4px solid var(--au2);border-radius:6px;padding:.8rem;background:var(--bg)}
+.tile h3{font-size:1.05rem;color:var(--tx)}
+.code{font-family:monospace;background:#0b0b0b;color:#d4af37;padding:.15rem .5rem;border-radius:4px;letter-spacing:.15em}
+.row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.row>input{flex:1;min-width:140px}
+.nav{display:flex;gap:.5rem;margin:1rem 0;flex-wrap:wrap}
+.nav button{background:var(--card);border:1px solid var(--bd);color:var(--tx);padding:.5rem 1rem;border-radius:20px;font:inherit;cursor:pointer}
+.nav button.on{background:var(--gr);color:#fff;border-color:var(--gr2)}
+.folder{border:1px solid var(--bd);border-radius:8px;margin:1rem 0;background:var(--card)}
+.folder>.fh{display:flex;justify-content:space-between;align-items:center;gap:.5rem;padding:.7rem 1rem;background:#0b0b0b;border-radius:8px 8px 0 0;border-bottom:2px solid var(--au2);flex-wrap:wrap}
+.folder>.fh h3{margin:0;color:#d4af37}
+.folder>.fb{padding:1rem}
+.empty{color:var(--mut);font-style:italic}
+.big{font-size:1.1rem}
+select{padding:.6rem;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit}
+.stage{position:relative;height:62vh;min-height:320px;background:#0b0b0b;border:2px solid var(--au2);border-radius:8px;overflow:hidden;touch-action:none;cursor:grab;user-select:none}
+#world{position:absolute;left:0;top:0;width:1000px;height:1000px;transform-origin:0 0}
+#mapImg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
+#tokens{position:absolute;inset:0}
+.tok{position:absolute;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:var(--gr);border:4px solid #d4af37;color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;cursor:grab;touch-action:none}
+.tok.en{background:#8a1c1c}
+.tok img{width:100%;height:100%;border-radius:50%;object-fit:cover;pointer-events:none}
+.tok small{position:absolute;top:68px;left:50%;transform:translateX(-50%);white-space:nowrap;background:#0b0b0b;color:#d4af37;font-size:16px;padding:0 8px;border-radius:4px;font-weight:400;pointer-events:none}
+.tok .x{position:absolute;top:-10px;right:-10px;width:24px;height:24px;border-radius:50%;background:#000;color:#fff;font-size:16px;line-height:24px;text-align:center;border:1px solid #d4af37}
+#noMap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#d4af37;text-align:center;padding:1rem;pointer-events:none}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:50;padding:1rem}
+.mb{background:var(--card);border:2px solid var(--au2);border-radius:10px;padding:1.2rem;max-width:460px;width:100%;max-height:90vh;overflow:auto;position:relative}
+.mb .cl{position:absolute;top:.4rem;right:.6rem;background:none;border:0;font-size:1.5rem;color:var(--tx);cursor:pointer}
+.thumb{width:56px;height:56px;border-radius:8px;background:var(--bg2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden;margin-bottom:.4rem}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.chip{display:inline-block;padding:.25rem .7rem;border:1px solid var(--au2);border-radius:20px;margin:.2rem;cursor:grab;background:var(--bg)}
+.attrs{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:.6rem 0}
+.dres{font-size:4rem;font-weight:700;color:var(--au);text-align:center;margin:.5rem 0}
+.logo,h1,h2,h3{font-family:'Cinzel',Georgia,serif}
+#room{--bg:#0b0b0b;--bg2:#101a14;--card:#151515;--tx:#f5f5f5;--mut:#aaa;--gr:#2fa56b;--gr2:#1f7a4d;--au:#d4af37;--au2:#f0cf64;--bd:#33301f;background:linear-gradient(180deg,#0b0b0b,#0d1a12);color:var(--tx);min-height:100vh}
+#room .wrap{max-width:1400px}
+.rtop .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+#rTitle{font-family:'Cinzel',Georgia,serif;color:#cfc7a0;font-size:1.3rem;text-align:center}
+.rsub{border-bottom:1px solid var(--bd);background:#0a110d}
+.rsub .wrap{display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.rsub b{color:var(--au2);letter-spacing:.05em}
+.rg{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(290px,1fr);gap:1rem;align-items:start}
+@media(max-width:850px){.rg{grid-template-columns:1fr}.rtop .wrap{grid-template-columns:auto 1fr auto}}
+.panel{background:#0c1710;border:1px solid var(--bd);border-radius:12px;padding:1rem;min-height:68vh}
+.ptabs{display:flex;background:#0b0b0b;border-radius:10px;padding:4px;margin-bottom:1rem}
+.ptabs button{flex:1;background:none;border:0;color:var(--mut);padding:.55rem .2rem;border-radius:8px;font:inherit;cursor:pointer}
+.ptabs button.on{background:#000;color:#fff;font-weight:700}
+#room .stage{height:68vh;background:#0c1710;border:1px solid var(--au)}
+.hrt{letter-spacing:2px;margin-top:.2rem}
+/* ===== Tema lobby: neon + ouro ===== */
+html:root:root,#room{--bg:#010a13;--bg2:#091428;--card:#0a1a2c;--tx:#f0e6d2;--mut:#a09b8c;--gr:#18c98a;--gr2:#0e8f63;--au:#c8aa6e;--au2:#f0d58a;--bd:#3d3321;--neon:#0ac8b9;--neon2:#2ef2a0;--mag:#c34bff;color-scheme:dark}
+body{font-family:'Segoe UI',Roboto,system-ui,sans-serif;background:radial-gradient(900px 500px at 50% -10%,#0ac8b933,transparent 70%),radial-gradient(700px 500px at 100% 100%,#6a1bb233,transparent 70%),radial-gradient(600px 400px at 0 80%,#18c98a1f,transparent 70%),#010a13;background-attachment:fixed;color:var(--tx)}
+#room{background:transparent}
+::selection{background:#0ac8b9;color:#001}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:#785a28;border-radius:6px}::-webkit-scrollbar-track{background:#010a13}
+h1,h2,h3{color:var(--au2);letter-spacing:.05em;text-shadow:0 0 14px #c8aa6e44}
+h2{border-bottom:1px solid var(--bd);padding-bottom:.35rem}
+header.top{background:linear-gradient(180deg,#010a13,#0a1428);border-bottom:2px solid var(--au);box-shadow:0 4px 26px #0ac8b922}
+.logo{color:var(--au2);letter-spacing:.14em;text-shadow:0 0 14px #c8aa6e99}
+.logo span{color:var(--neon2);text-shadow:0 0 16px #2ef2a0cc}
+.hero{background:radial-gradient(520px 260px at 50% 0,#0ac8b944,transparent 70%),linear-gradient(180deg,#0a1428aa,transparent)}
+.hero .logo{font-size:clamp(2.6rem,10vw,4.6rem);letter-spacing:.2em}
+.hero p{letter-spacing:.2em;text-transform:uppercase;font-size:.8rem;color:var(--neon)}
+.d4{border-bottom-color:var(--au2);filter:drop-shadow(0 0 14px #f0d58a) drop-shadow(0 0 28px #0ac8b9);animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{50%{filter:drop-shadow(0 0 22px #f0d58a) drop-shadow(0 0 40px #2ef2a0)}}
+.card,.panel{position:relative;background:linear-gradient(180deg,#0a1a2c,#071220);border:1px solid #5b4a26;border-top:2px solid var(--neon);box-shadow:0 10px 34px #000a,0 0 26px #0ac8b91c}
+.card::before,.panel::before,.card::after,.panel::after{content:"";position:absolute;width:16px;height:16px;pointer-events:none}
+.card::before,.panel::before{top:-2px;left:-2px;border-top:3px solid var(--au2);border-left:3px solid var(--au2)}
+.card::after,.panel::after{bottom:-2px;right:-2px;border-bottom:3px solid var(--au2);border-right:3px solid var(--au2)}
+.auth{box-shadow:0 10px 40px #000a,0 0 40px #0ac8b933}
+input,textarea,select{background:#010a13;border:1px solid #5b4a26;color:var(--tx)}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 2px #0ac8b966,0 0 16px #0ac8b955}
+label{text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;color:var(--au)}
+.btn{background:linear-gradient(180deg,#1fd99a,#0a7a55);color:#00130c;border:1px solid var(--au2);text-transform:uppercase;letter-spacing:.09em;font-size:.78rem;font-weight:800;box-shadow:0 0 14px #18c98a55,inset 0 1px 0 #ffffff55;transition:filter .15s,box-shadow .15s,transform .15s}
+.btn:hover{background:linear-gradient(180deg,#2ef2a0,#0e9468);filter:brightness(1.1);box-shadow:0 0 24px #2ef2a0aa;transform:translateY(-1px)}
+.btn.au{background:linear-gradient(180deg,#f7e2a0,#c8aa6e);color:#1a1200;box-shadow:0 0 16px #f0d58a77,inset 0 1px 0 #fff8}
+.btn.au:hover{background:linear-gradient(180deg,#fff0bd,#d9b970);box-shadow:0 0 26px #f0d58acc}
+.btn.ghost{background:transparent;color:var(--au2);border-color:#785a28;box-shadow:none}
+.btn.ghost:hover{background:#0ac8b922;border-color:var(--neon);color:#fff;box-shadow:0 0 16px #0ac8b966}
+.btn.red{background:linear-gradient(180deg,#e0405f,#7a1230);color:#fff;border-color:#ff7a93;box-shadow:0 0 12px #ff4d6d55}
+#bNext{animation:glowb 2.4s ease-in-out infinite}
+@keyframes glowb{50%{box-shadow:0 0 30px #f0d58a}}
+.tabs button.on,.ptabs button.on{color:var(--neon2);border-bottom-color:var(--neon2);text-shadow:0 0 10px #2ef2a0}
+.tabs button.on{box-shadow:0 8px 14px -10px #2ef2a0}
+.ptabs{background:#010a13;border:1px solid #3d3321}
+.ptabs button.on{background:linear-gradient(180deg,#0e2a3a,#071220);color:#fff;border-bottom:2px solid var(--neon2)}
+.nav button{background:#0a1a2c;border:1px solid #5b4a26;color:var(--au2);text-transform:uppercase;letter-spacing:.08em;font-size:.8rem}
+.nav button.on{background:linear-gradient(180deg,#1fd99a,#0a7a55);color:#00130c;border-color:var(--au2);font-weight:800;box-shadow:0 0 16px #18c98a88}
+.tile{background:linear-gradient(180deg,#0c2034,#08121f);border:1px solid #3d3321;border-left:4px solid var(--neon);transition:transform .15s,box-shadow .15s}
+.tile:hover{transform:translateY(-2px);box-shadow:0 0 22px #0ac8b944}
+.code{background:#010a13;color:var(--neon);border:1px solid var(--neon);text-shadow:0 0 8px var(--neon);box-shadow:0 0 10px #0ac8b944}
+.thumb{background:radial-gradient(circle,#0e2a3a,#010a13);border:2px solid var(--au);box-shadow:0 0 12px #c8aa6e55}
+.folder{background:#071220;border:1px solid #5b4a26;box-shadow:0 0 22px #0ac8b91a}
+.folder>.fh{background:linear-gradient(90deg,#0a1a2c,#0e3a4a);border-bottom:2px solid var(--au)}
+.chip{border:1px solid var(--neon);color:#fff;background:#0ac8b91a;box-shadow:0 0 12px #0ac8b955}
+.stage,#room .stage{background:radial-gradient(circle at 50% 50%,#0c2034,#010a13);border:2px solid var(--au);box-shadow:0 0 0 1px #000,0 0 40px #0ac8b933 inset,0 0 26px #0ac8b933}
+.tok{background:radial-gradient(circle at 30% 30%,#2ef2a0,#0a6b4a);border:3px solid var(--au2);box-shadow:0 0 0 3px #000,0 0 20px #2ef2a0cc}
+.tok.en{background:radial-gradient(circle at 30% 30%,#ff6b8a,#6a0f2a);box-shadow:0 0 0 3px #000,0 0 22px #ff4d6dcc}
+.tok small{border:1px solid var(--au);background:#010a13ee}
+.rtop #rTitle{color:var(--au2);text-shadow:0 0 12px #c8aa6e88;letter-spacing:.12em}
+.rsub{background:linear-gradient(180deg,#0a1428,#071220);border-bottom:1px solid #5b4a26}
+.rsub b{color:var(--neon);text-shadow:0 0 8px #0ac8b9aa}
+.dres{text-shadow:0 0 24px currentColor;font-family:'Cinzel',Georgia,serif}
+.hrt{filter:drop-shadow(0 0 6px #ff4d6d)}
+#modal{backdrop-filter:blur(5px);background:#010a13cc}
+.mb{background:linear-gradient(180deg,#0a1a2c,#071220);border:2px solid var(--au);box-shadow:0 0 40px #0ac8b944}
+.empty{color:var(--mut)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== Ficha bonita ===== */
+.mb.wide{max-width:700px}
+.fsec{border:1px solid #3d3321;border-radius:10px;padding:.8rem;margin:.9rem 0;background:#071220}
+.fhead{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.fhead h3{margin:0;font-size:1rem}
+.badge{font-size:.75rem;font-weight:800;padding:.15rem .6rem;border-radius:20px;border:1px solid var(--au);color:var(--au2);background:#010a13;white-space:nowrap}
+.badge.ok{border-color:var(--neon2);color:var(--neon2);box-shadow:0 0 10px #2ef2a066}
+.hint{font-size:.82rem;color:var(--mut);margin:.2rem 0 .5rem}
+.fld{margin:.8rem 0}
+.fld .hint{margin:.1rem 0 .35rem}
+.opts{display:grid;gap:.4rem}
+.opt{display:flex;gap:.6rem;align-items:flex-start;margin:0;padding:.5rem .6rem;border:1px solid #3d3321;border-radius:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:.9rem;color:var(--tx);background:#0a1a2c}
+.opt:hover{border-color:var(--neon)}
+.opt:has(input:checked){border-color:var(--neon2);background:#0e2a22;box-shadow:0 0 12px #2ef2a033}
+.opt.off{opacity:.38;cursor:not-allowed}
+.opt input{width:auto;margin-top:.25rem;accent-color:#2ef2a0}
+.opt span{display:flex;flex-direction:column}
+.opt small{color:var(--mut);font-size:.78rem}
+.fncards{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+@media(max-width:560px){.fncards{grid-template-columns:1fr}}
+.fncard{margin:0;text-align:center;padding:.7rem .3rem;border:1px solid #3d3321;border-radius:10px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:.95rem;color:var(--tx);background:#0a1a2c}
+.fncard input{display:none}
+.fncard:has(input:checked){border-color:var(--au2);background:linear-gradient(180deg,#2a2208,#0a1a2c);box-shadow:0 0 16px #f0d58a55}
+.fsave{position:sticky;bottom:-1.2rem;padding:.8rem 0 .2rem;background:linear-gradient(180deg,transparent,#071220 35%)}
+.shead{text-align:center;margin-bottom:.6rem}
+.chipx{display:inline-block;padding:.15rem .6rem;border:1px solid var(--neon);border-radius:20px;margin:.15rem;font-size:.82rem;background:#0ac8b91a}
+.sk{color:var(--au);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;margin:.8rem 0 .2rem}
+
+/* ===== Vez do turno ===== */
+.tok.turn{animation:tp 1.4s ease-in-out infinite}
+@keyframes tp{50%{transform:scale(1.18)}}
+.badge.big2{font-size:1rem}
+
+/* ===== Criador de fichas ===== */
+.wrap{max-width:1400px}
+.cg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.2rem;align-items:start}
+@media(max-width:950px){.cg{grid-template-columns:1fr}}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem}
+@media(max-width:560px){.g3{grid-template-columns:1fr}}
+.note{border:1px solid var(--au);background:#2a2208;color:var(--au2);padding:.8rem 1rem;border-radius:10px;font-size:.9rem;margin-bottom:.8rem}
+.note.ok{border-color:var(--neon2);background:#0e2a22;color:var(--neon2)}
+.pdfname{font-size:.85rem;color:var(--mut);margin:.6rem 0 .2rem}
+#pvBox{position:relative;width:100%;border:1px solid #5b4a26;border-radius:8px;background:#0a1a2c;overflow:hidden;box-shadow:0 0 24px #0ac8b922;margin-top:.3rem}
+#sheet{width:794px;min-height:1123px;display:flex;flex-direction:column;padding:30px;background:radial-gradient(circle at 50% 35%,#fbf6e8,#efe3c4);color:#1d1a12;font-family:Georgia,'Times New Roman',serif;font-size:13px;line-height:1.35;transform-origin:0 0;position:relative}
+#sheet *{box-sizing:border-box}
+#sheet .fr{flex:1;border:3px double #a8842a;padding:18px}
+#sheet .top{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(90deg,#0b2f20,#145a38);color:#f0d58a;padding:10px 16px;border:2px solid #a8842a;margin-bottom:14px}
+#sheet .t1{font-family:'Cinzel',Georgia,serif;font-size:26px;font-weight:700;letter-spacing:.16em}
+#sheet .t1 b{color:#6ef0b0}
+#sheet .t2{font-family:'Cinzel',Georgia,serif;font-size:13px;letter-spacing:.2em}
+#sheet .id{display:flex;gap:12px;margin-bottom:12px}
+#sheet .pic{width:150px;height:150px;flex:none;border:2px solid #7a6420;background:rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:54px;color:#a8842a;overflow:hidden}
+#sheet .pic img{width:100%;height:100%;object-fit:cover}
+#sheet .flds{flex:1;display:flex;flex-direction:column;gap:8px}
+#sheet .r3{display:grid;grid-template-columns:90px 1fr 1fr;gap:8px}
+#sheet .bx{border:1.5px solid #7a6420;background:rgba(255,255,255,.45);padding:5px 9px}
+#sheet .bx small{display:block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#6b5a24}
+#sheet .bx .v{font-size:15px;font-weight:700;min-height:21px}
+#sheet .bx .v.big{font-size:22px;font-family:'Cinzel',Georgia,serif}
+#sheet .st{font-family:'Cinzel',Georgia,serif;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:11px;background:#145a38;color:#f0d58a;padding:3px 9px;border:1px solid #a8842a}
+#sheet .sec{margin-bottom:10px}
+#sheet .sec .cn{border:1.5px solid #7a6420;border-top:0;background:rgba(255,255,255,.4);padding:7px 10px}
+#sheet .hrs{display:flex;gap:6px;align-items:center}
+#sheet .hrs svg{width:30px;height:30px}
+#sheet .cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+#sheet .cols .sec,#sheet .cols2 .sec{display:flex;flex-direction:column;margin-bottom:0}
+#sheet .cols .cn,#sheet .cols2 .cn{flex:1}
+#sheet .cols .cn{min-height:150px}
+#sheet .act{padding:4px 0;border-bottom:1px dotted #a8842a}
+#sheet .act:last-child{border-bottom:0}
+#sheet .act b{display:block;font-size:12.5px}
+#sheet .act span{display:block;font-size:10.5px;color:#4a4023;font-style:italic}
+#sheet .act.em{height:34px}
+#sheet .cols2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+#sheet .txt{white-space:pre-wrap;min-height:48px}
+#sheet .foot{text-align:center;font-size:10px;color:#6b5a24;letter-spacing:.1em;margin-top:6px}
+#sheet .pgline{position:absolute;left:0;right:0;border-top:2px dashed #c0272d;opacity:.55;pointer-events:none}
+#sheet .pgline i{position:absolute;right:6px;top:-14px;font-size:10px;color:#c0272d;font-style:normal}
+#code{width:100%;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;word-break:break-all;color:var(--neon)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="logo">RPG <span>WIT</span> · Fichas</div>
+  <span class="hint" style="margin:0">Criador de fichas · v1.0</span>
+</div></header>
+<div class="wrap" style="padding-top:1.2rem">
+<div class="cg">
+
+<!-- ESQUERDA: informações -->
+<div id="left">
+  <div class="card">
+    <h2>Dados do personagem</h2>
+    <div class="fld"><label for="fChar">Nome do personagem</label><div class="hint">Como o personagem se chama no mundo do jogo.</div><input id="fChar" maxlength="40" placeholder="Ex.: Alfredo"></div>
+    <div class="g3">
+      <div class="fld"><label for="fAge">Idade</label><div class="hint">Idade do personagem.</div><input id="fAge" maxlength="10" inputmode="numeric" placeholder="32"></div>
+      <div class="fld"><label for="fRace">Raça</label><div class="hint">Pode ser fictícia.</div><input id="fRace" maxlength="30" placeholder="Ogro"></div>
+      <div class="fld"><label for="fHp">Corações atuais</label><div class="hint">Vazio = vida cheia.</div><input id="fHp" type="number" min="0" max="4"></div>
+    </div>
+    <div class="fld"><label for="fPic">Imagem do personagem (opcional)</label><div class="hint">PNG ou JPG. Aparece no topo da ficha em PDF.</div>
+      <input id="fPic" type="file" accept="image/png,image/jpeg"><button class="btn ghost sm hide" id="bPicRm" style="margin-top:.4rem">Remover imagem</button></div>
+  </div>
+
+  <div class="card">
+    <h2>Função</h2>
+    <p class="hint">O papel do personagem no grupo. Ela define quantas ações de cada tipo ele pode ter.</p>
+    <div class="fncards" id="fnCards"></div>
+    <p class="hint" id="fnDesc" style="margin-top:.6rem;color:var(--au2)"></p>
+  </div>
+
+  <div class="card">
+    <h2>História e luta</h2>
+    <div class="fld"><label for="fHist">História e objetivo</label><div class="hint">De onde ele veio e o que busca. Pense em gostos, desgostos e metas, mesmo que ele não exista!</div><textarea id="fHist" rows="4" maxlength="600"></textarea></div>
+    <div class="fld"><label for="fFight">Como luta?</label><div class="hint">O estilo de luta: força bruta, magia, furtividade, arco à distância...</div><input id="fFight" maxlength="120"></div>
+  </div>
+
+  <div class="card">
+    <h2>Ações e equipamento</h2>
+    <p class="hint">Os limites mudam com a função, como no guia. As opções bloqueiam sozinhas quando o limite é atingido.</p>
+    <div id="groups"></div>
+  </div>
+
+  <div class="card">
+    <h2>Carregar de um código</h2>
+    <p class="hint">Cole um código gerado por este criador para continuar editando uma ficha.</p>
+    <textarea id="codeIn" rows="3" placeholder="WIT1...."></textarea>
+    <button class="btn ghost" id="bLoad" style="margin-top:.5rem">Carregar ficha</button>
+    <div class="msg" id="loadMsg"></div>
+  </div>
+</div>
+
+<!-- DIREITA: pré-visualização -->
+<div id="right">
+  <div class="note" id="status"></div>
+  <div class="row">
+    <button class="btn au" id="bPdf">⬇ Baixar PDF</button>
+    <button class="btn ghost" id="bCopy" style="margin-top:.8rem">Copiar código</button>
+  </div>
+  <p class="pdfname">Sai como <b id="fname" style="color:var(--tx)"></b></p>
+  <p class="pdfname" style="margin-top:0">Página <b id="pgInfo" style="color:var(--tx)">1 de 1</b> · a linha vermelha tracejada mostra onde o PDF muda de página</p>
+  <div id="pvBox"><div id="sheet"></div></div>
+
+  <div class="card" style="margin-top:1.2rem">
+    <h2>Código para o sistema do RPG</h2>
+    <p class="hint">Texto com todas as informações da ficha. O sistema principal lê só isso. Copie ou baixe o arquivo.</p>
+    <textarea id="code" rows="6" readonly></textarea>
+    <div class="row" style="margin-top:.5rem">
+      <button class="btn sm" id="bCopy2">Copiar código</button>
+      <button class="btn sm ghost" id="bTxt">Baixar .txt</button>
+    </div>
+    <div class="msg" id="copyMsg"></div>
+  </div>
+</div>
+
+</div>
+<p class="hint" style="text-align:center;margin:1.5rem 0">Esta ferramenta não guarda dados: baixe o PDF e copie o código.</p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script>
+(function(){
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+
+/* ===== regras do guia (iguais às do sistema principal) ===== */
+var ACT={c:['Ataque Furioso|Ataca 2 vezes, +1 coração de dano; você não pode ser protegido até o fim da rodada.','Ataque Estratégico|Ignora uma proteção ou defesa do alvo.','Golpe Repulsor|Afasta o inimigo e impede que alcance um aliado, ou o empurra de uma passagem.','Golpe Desarmador|O inimigo perde a arma até recuperá-la.','Ataque pelas Sombras|+1 coração de dano se o inimigo estiver distraído.','Magia: Bola de Fogo|1 de dano à distância, em área.','Magia: Prisão de Gelo|O inimigo não se move até se libertar (ainda ataca ao alcance).','Magia: Flecha Guiadora|Ataque que não é impedido por obstáculos pequenos ou esconderijos.'],
+s:['Magia: Curar Feridas|Recupera 1 coração de um aliado (precisa encostar).','Grito de Coragem|Um aliado repete uma rolagem e fica com o novo resultado.','Magia: Escudo Arcano|Anula o próximo coração de dano de um aliado.','Arremesso Preciso|Arremessa um item a um aliado, que o usa conforme as regras.','Resgate Rápido|Tira um aliado do perigo e você ocupa o lugar da consequência.','Magia: Benção|Acrescenta 1 efeito à próxima rolagem do aliado.','Magia: Espírito Ajudante|Usa os sentidos do espírito (visão, audição) e fala por ele.','Magia: Acelerador|Um aliado age 2 vezes no turno, mas não pode se mover no próximo.'],
+a:['Olhos de Explorador|Encontra pistas, passagens secretas ou objetos escondidos.','Magia: Luz Mágica|Esfera de luz que ilumina lugares escuros.','Conversador Nato|Um NPC oferece informação extra ou ajuda simples.','Magia: Raízes Mágicas|Cria passagem, prende um objeto ou ajuda a alcançar lugar elevado.','Magia: Toque Arcano|Move alavanca, pega chave ou abre porta simples à distância.','Magia: Ilusão|Imagem ou som falso para distrair; não causa dano e pode falhar.','Acrobático|Supera obstáculo físico ou alcança local difícil.','Improvisador|Transforma um objeto comum em ferramenta útil.']};
+var WP=["Espada|Corpo a corpo. Equilibrada, sem vantagens ou desvantagens.", "Machado de Batalha|Corpo a corpo. Estragos maiores, porém muito impreciso.", "Clava|Corpo a corpo. Simples e resistente, porém muito destrutiva.", "Lança|Corpo a corpo, alcance maior. Exige equilíbrio.", "Adagas|Corpo a corpo ou arremesso curto. A leveza pode prejudicar.", "Arco e Flecha|Longa distância. É preciso ser preciso para não acertar nada indesejado.", "Besta|Longa distância. Pode travar e demora para destravar.", "Cajado Mágico|Curta distância ou magia à distância. Pode ter efeitos inesperados.", "Varinha Mágica|Longa distância, ataques mágicos. Falha crítica pode atingir objeto próximo."];
+var IT=["Kit de Poções Simples|Cria uma poção de leve efeito mágico por sessão, coletando itens.", "Pássaro Mensageiro Robótico|Leva mensagem curta a pessoa conhecida em local próximo.", "Poção de Cura (uso único)|Recupera 1 coração de quem beber.", "Corda com Gancho|Escala muros, atravessa vãos ou puxa objetos fora de alcance.", "Apito de Emergência|Chama a atenção de aliados próximos ou de quem possa ouvir.", "Luneta|Observa locais distantes, identifica criaturas ou examina uma área.", "Cristal Explosivo (uso único)|Lançado, causa 1 coração de dano a um inimigo próximo.", "Diário de Explorador|Registra pistas; 1 vez por aventura pede ao mestre para relembrar uma pista.", "Flauta Encantada|Acalma animais ou criaturas amigáveis e facilita aproximação pacífica."];
+var FN={Guerreiro:'Guerreiro: +1 coração de vida (4 no total) e +2 ações de combate, que não podem ser mágicas.',Suporte:'Suporte: +2 ações de suporte e pode incentivar os aliados, curando 1 de vida de todos (1 vez por combate).',Estrategista:'Estrategista: +2 ações de aventura e sempre tem +1 em resultados de dados fora de combate.'};
+var FI={Guerreiro:'⚔️',Suporte:'💚',Estrategista:'🧭'};
+var DESC={};[ACT.c,ACT.s,ACT.a,WP,IT].forEach(function(l){l.forEach(function(x){var p=x.split('|');DESC[p[0]]=p[1]})});
+function cnt(f){return{c:2+(f==='Guerreiro'?2:0),s:1+(f==='Suporte'?2:0),a:1+(f==='Estrategista'?2:0),w:1,i:2}}
+function maxHp(f){return 3+(f==='Guerreiro'?1:0)}
+var FUNCS=Object.keys(FN),PIC='';
+
+/* ===== formulário ===== */
+function grp(k,t,h,list){return '<div class="fsec"><div class="fhead"><h3>'+t+'</h3><span class="badge" id="cnt-'+k+'"></span></div><p class="hint">'+h+'</p><div class="opts">'+list.map(function(x){var p=x.split('|');return '<label class="opt"><input type="checkbox" name="'+k+'" value="'+esc(p[0])+'"><span><b>'+esc(p[0])+(p[0].indexOf('Magia')===0?' ✨':'')+'</b><small>'+esc(p[1])+'</small></span></label>'}).join('')+'</div></div>'}
+$('groups').innerHTML=grp('c','Ações de combate','Como o personagem enfrenta inimigos. Ações com ✨ são magias.',ACT.c)+grp('s','Ações de suporte','Ajudam os aliados: curar, proteger, incentivar.',ACT.s)+grp('a','Ações de aventura','Servem para explorar, conversar e resolver problemas fora de combate.',ACT.a)+grp('w','Arma','Todas as armas causam 1 coração de dano, mas cada uma tem suas diferenças.',WP)+grp('i','Itens','O que o personagem carrega. As armas não contam nesse limite.',IT);
+$('fnCards').innerHTML=FUNCS.map(function(k,i){return '<label class="fncard"><input type="radio" name="fFn" value="'+k+'"'+(i?'':' checked')+'><b>'+FI[k]+' '+k+'</b></label>'}).join('');
+function fnow(){return document.querySelector('input[name="fFn"]:checked').value}
+function boxes(k){return [].slice.call(document.querySelectorAll('#groups input[name="'+k+'"]'))}
+function g(k){return boxes(k).filter(function(x){return x.checked}).map(function(x){return x.value})}
+function refresh(trim){var f=fnow(),Lm=cnt(f);
+ ['c','s','a','w','i'].forEach(function(k){var bx=boxes(k);
+  if(trim)bx.filter(function(x){return x.checked}).slice(Lm[k]).forEach(function(x){x.checked=false});
+  var on=bx.filter(function(x){return x.checked}),mg=on.filter(function(x){return x.value.indexOf('Magia')===0}).length;
+  bx.forEach(function(x){var d=!x.checked&&(on.length>=Lm[k]||(k==='c'&&f==='Guerreiro'&&mg>=2&&x.value.indexOf('Magia')===0));x.disabled=d;x.parentNode.classList.toggle('off',d)});
+  var b=$('cnt-'+k);b.textContent=on.length+' / '+Lm[k];b.className='badge'+(on.length===Lm[k]?' ok':'')});
+ $('fnDesc').textContent=FN[f]}
+function data(){var f=fnow(),mx=maxHp(f),hv=$('fHp').value,hp=hv===''?mx:Math.max(0,Math.min(mx,Math.round(+hv)||0));
+ return{n:$('fChar').value.trim(),i:$('fAge').value.trim(),r:$('fRace').value.trim(),f:f,h:$('fHist').value.trim(),l:$('fFight').value.trim(),c:g('c'),s:g('s'),a:g('a'),w:g('w')[0]||'',it:g('i'),hp:hp}}
+
+/* ===== código de exportação =====
+   Formato:  WIT1.<payload>.<verificação>
+   payload     = JSON em UTF-8 codificado em Base64 URL-safe (sem "=")
+   verificação = hash FNV-1a de 32 bits (8 dígitos hexadecimais) calculado sobre o payload
+   JSON: {v:1, n:nome, i:idade, r:raça, f:função, h:história, l:como luta,
+          c:[ações de combate], s:[ações de suporte], a:[ações de aventura],
+          w:arma, it:[itens], hp:corações atuais}                                   */
+function fnv(s){var h=0x811c9dc5;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return ('00000000'+h.toString(16)).slice(-8)}
+function b64u(s){var b=new TextEncoder().encode(s),r='';b.forEach(function(x){r+=String.fromCharCode(x)});return btoa(r).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function unb64u(p){p=p.replace(/-/g,'+').replace(/_/g,'/');while(p.length%4)p+='=';var s=atob(p),b=new Uint8Array(s.length);for(var i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return new TextDecoder().decode(b)}
+function encode(d){var p=b64u(JSON.stringify({v:1,n:d.n,i:d.i,r:d.r,f:d.f,h:d.h,l:d.l,c:d.c,s:d.s,a:d.a,w:d.w,it:d.it,hp:d.hp}));return 'WIT1.'+p+'.'+fnv(p)}
+function decode(code){code=String(code||'').replace(/\s+/g,'');
+ var m=/^WIT1\.([A-Za-z0-9_-]+)\.([0-9a-f]{8})$/.exec(code);if(!m)throw new Error('Código inválido: formato não reconhecido.');
+ if(fnv(m[1])!==m[2])throw new Error('Código inválido: ele foi alterado ou está incompleto.');
+ var o;try{o=JSON.parse(unb64u(m[1]))}catch(e){throw new Error('Código inválido: conteúdo ilegível.')}
+ if(!o||o.v!==1)throw new Error('Versão de código não suportada.');
+ function S(v,max){if(typeof v!=='string'||v.length>max)throw new Error('Código inválido: campo de texto fora do padrão.');return v}
+ function A(v,max){if(!Array.isArray(v)||v.length>max)throw new Error('Código inválido: lista fora do limite da função.');return v.map(function(x){return S(x,80)})}
+ if(FUNCS.indexOf(o.f)<0)throw new Error('Código inválido: função desconhecida.');
+ var L=cnt(o.f),mx=maxHp(o.f);
+ var d={n:S(o.n,40),i:S(o.i,10),r:S(o.r,30),f:o.f,h:S(o.h,600),l:S(o.l,120),c:A(o.c,L.c),s:A(o.s,L.s),a:A(o.a,L.a),w:S(o.w,80),it:A(o.it,L.i),hp:Math.round(+o.hp)};
+ if(!(d.hp>=0&&d.hp<=mx))throw new Error('Código inválido: corações fora do limite.');
+ if(!d.n)throw new Error('Código inválido: sem nome de personagem.');
+ return d}
+window.WITFicha={encode:encode,decode:decode,version:1};
+
+/* ===== ficha em PDF (pré-visualização HTML) ===== */
+function heart(full){return '<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.3 3 4.5 6.6 4.5c2 0 3.8 1.1 5.4 3 1.6-1.9 3.4-3 5.4-3 3.6 0 5.7 3.8 4.2 7.3C19.5 16.4 12 21 12 21z" fill="'+(full?'#c0272d':'none')+'" stroke="'+(full?'#7a1216':'#7a6420')+'" stroke-width="1.4"/></svg>'}
+function actCol(title,ico,arr,n){var h='<div class="sec"><div class="st">'+ico+' '+title+' ('+n+')</div><div class="cn">';
+ for(var k=0;k<n;k++){if(arr[k])h+='<div class="act"><b>'+(arr[k].indexOf('Magia')===0?'✨ ':'')+esc(arr[k])+'</b><span>'+esc(DESC[arr[k]]||'')+'</span></div>';else h+='<div class="act em"></div>'}
+ return h+'</div></div>'}
+function sheetHtml(d){var L=cnt(d.f),mx=maxHp(d.f),hs='';for(var k=0;k<mx;k++)hs+=heart(k<d.hp);
+ var its='';for(var k=0;k<2;k++)its+=d.it[k]?'<div class="act"><b>▢ '+esc(d.it[k])+'</b><span>'+esc(DESC[d.it[k]]||'')+'</span></div>':'<div class="act em"></div>';
+ return '<div class="fr"><div class="top"><div class="t1">RPG <b>WIT</b></div><div class="t2">FICHA DE PERSONAGEM</div></div>'
+ +'<div class="id"><div class="pic">'+(PIC?'<img src="'+PIC+'" alt="">':FI[d.f])+'</div><div class="flds"><div class="bx"><small>Nome do personagem</small><div class="v big">'+esc(d.n)+'</div></div><div class="r3"><div class="bx"><small>Idade</small><div class="v">'+esc(d.i)+'</div></div><div class="bx"><small>Raça</small><div class="v">'+esc(d.r)+'</div></div><div class="bx"><small>Função</small><div class="v">'+FI[d.f]+' '+d.f+'</div></div></div></div></div>'
+ +'<div class="sec"><div class="st">Pontos de vida</div><div class="cn"><div class="hrs">'+hs+'</div><div style="font-size:10.5px;color:#4a4023;font-style:italic;margin-top:3px">Todos começam com 3 corações (Guerreiro: 4). Quando um ataque inimigo acerta, perde 1 coração.</div></div></div>'
+ +'<div class="sec"><div class="st">Função</div><div class="cn">'+esc(FN[d.f])+'</div></div>'
+ +'<div class="cols">'+actCol('Combate','⚔️',d.c,L.c)+actCol('Suporte','💚',d.s,L.s)+actCol('Aventura','🧭',d.a,L.a)+'</div>'
+ +'<div class="cols2"><div class="sec"><div class="st">Arma (1)</div><div class="cn">'+(d.w?'<div class="act"><b>⚔ '+esc(d.w)+'</b><span>'+esc(DESC[d.w]||'')+'</span></div>':'<div class="act em"></div>')+'</div></div><div class="sec"><div class="st">Itens (2)</div><div class="cn">'+its+'</div></div></div>'
+ +'<div class="sec"><div class="st">Como luta</div><div class="cn txt">'+esc(d.l)+'</div></div>'
+ +'<div class="sec"><div class="st">História e objetivo</div><div class="cn txt" style="min-height:90px">'+esc(d.h)+'</div></div>'
+ +'<div class="foot">RPG WIT · ficha gerada em '+new Date().toLocaleDateString('pt-BR')+'</div></div>'}
+var PAGE=1123,pages=1,scale=1;
+function fitPreview(){var box=$('pvBox'),sh=$('sheet');scale=Math.min(1,box.clientWidth/794);sh.style.transform='scale('+scale+')';box.style.height=(sh.offsetHeight*scale)+'px'}
+function fname(d){return 'Ficha - '+(d.n||'Personagem').replace(/[\\/:*?"<>|]+/g,'')+'.pdf'}
+function render(){var d=data(),sh=$('sheet');
+ sh.style.height='auto';sh.innerHTML=sheetHtml(d);
+ pages=Math.max(1,Math.ceil((sh.scrollHeight-2)/PAGE));sh.style.height=(pages*PAGE)+'px';
+ for(var i=1;i<pages;i++){var l=document.createElement('div');l.className='pgline';l.style.top=(i*PAGE)+'px';l.setAttribute('data-html2canvas-ignore','true');l.innerHTML='<i>página '+(i+1)+'</i>';sh.appendChild(l)}
+ fitPreview();
+ $('pgInfo').textContent='1 de '+pages;$('pgInfo').textContent=pages+(pages===1?' página':' páginas');
+ $('fname').textContent=fname(d);
+ var L=cnt(d.f),miss=[],have={c:d.c.length,s:d.s.length,a:d.a.length,w:d.w?1:0,i:d.it.length},nm={c:'combate',s:'suporte',a:'aventura',w:'arma',i:'item'};
+ if(!d.n)miss.push('o nome do personagem');
+ ['c','s','a','w','i'].forEach(function(k){if(have[k]<L[k])miss.push((L[k]-have[k])+' de '+nm[k])});
+ var st=$('status');st.className='note'+(miss.length?'':' ok');
+ st.innerHTML=miss.length?'Faltam preencher/escolher: <b>'+miss.join(', ')+'</b>. Você pode baixar mesmo assim.':'✔ Ficha completa e pronta para exportar.';
+ $('code').value=d.n?encode(d):'';
+ $('code').placeholder='Digite o nome do personagem para gerar o código.'}
+var pend=false;function schedule(){if(pend)return;pend=true;requestAnimationFrame(function(){pend=false;render()})}
+document.addEventListener('input',function(e){if(e.target.id==='codeIn'||e.target.id==='fPic')return;schedule()});
+document.addEventListener('change',function(e){var t=e.target;if(t.name==='fFn')refresh(true);else if(t.type==='checkbox')refresh(false);if(t.id!=='codeIn'&&t.id!=='fPic')schedule()});
+window.addEventListener('resize',fitPreview);
+if(window.ResizeObserver)new ResizeObserver(fitPreview).observe($('pvBox'));
+
+/* imagem do personagem */
+$('fPic').onchange=function(){var f=this.files[0];if(!f)return;var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,500/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);PIC=c.toDataURL('image/jpeg',.88);$('bPicRm').classList.remove('hide');render()};im.src=fr.result};fr.readAsDataURL(f)};
+$('bPicRm').onclick=function(){PIC='';$('fPic').value='';this.classList.add('hide');render()};
+
+/* ===== exportar: PDF e código ===== */
+$('bPdf').onclick=async function(){
+ if(!window.html2canvas||!window.jspdf)return alert('Não consegui carregar as bibliotecas do PDF. Verifique a internet e recarregue a página.');
+ var btn=this,old=btn.textContent;btn.disabled=true;btn.textContent='Gerando PDF...';
+ try{
+  var d=data(),sh=$('sheet'),clone=sh.cloneNode(true);
+  clone.style.transform='none';clone.style.position='fixed';clone.style.left='-10000px';clone.style.top='0';
+  [].forEach.call(clone.querySelectorAll('.pgline'),function(x){x.remove()});
+  document.body.appendChild(clone);
+  if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+  var cv=await html2canvas(clone,{scale:2,backgroundColor:'#f6efdc',useCORS:true,logging:false});
+  clone.remove();
+  var pdf=new window.jspdf.jsPDF({unit:'mm',format:'a4',orientation:'portrait'}),ph=cv.width*297/210,n=Math.max(1,Math.round(cv.height/ph));
+  for(var i=0;i<n;i++){var sl=document.createElement('canvas');sl.width=cv.width;sl.height=Math.min(Math.round(ph),cv.height-Math.round(i*ph));
+   var cx=sl.getContext('2d');cx.fillStyle='#f6efdc';cx.fillRect(0,0,sl.width,sl.height);cx.drawImage(cv,0,Math.round(i*ph),cv.width,sl.height,0,0,cv.width,sl.height);
+   if(i)pdf.addPage();pdf.addImage(sl.toDataURL('image/jpeg',.93),'JPEG',0,0,210,sl.height*210/cv.width)}
+  pdf.save(fname(d))
+ }catch(x){alert('Erro ao gerar o PDF: '+(x.message||x))}
+ btn.disabled=false;btn.textContent=old};
+function copy(){var t=$('code').value;if(!t){msg('Digite o nome do personagem para gerar o código.');return}
+ (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){msg('Código copiado!',true)},function(){$('code').select();document.execCommand('copy');msg('Código copiado!',true)})}
+function msg(t,ok){var e=$('copyMsg');e.textContent=t;e.className='msg'+(ok?' ok':'')}
+$('bCopy').onclick=copy;$('bCopy2').onclick=copy;
+$('bTxt').onclick=function(){var t=$('code').value;if(!t)return msg('Digite o nome do personagem para gerar o código.');var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain;charset=utf-8'}));a.download=fname(data()).replace(/\.pdf$/,'')+' (código).txt';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},2000)};
+
+/* ===== carregar de um código ===== */
+$('bLoad').onclick=function(){var m=$('loadMsg');
+ try{var d=decode($('codeIn').value);
+  $('fChar').value=d.n;$('fAge').value=d.i;$('fRace').value=d.r;$('fHist').value=d.h;$('fFight').value=d.l;$('fHp').value=d.hp;
+  document.querySelector('input[name="fFn"][value="'+d.f+'"]').checked=true;
+  var lost=[];[['c',d.c],['s',d.s],['a',d.a],['w',d.w?[d.w]:[]],['i',d.it]].forEach(function(p){var bx=boxes(p[0]);bx.forEach(function(x){x.checked=false});p[1].forEach(function(v){var x=bx.filter(function(y){return y.value===v})[0];if(x)x.checked=true;else lost.push(v)})});
+  refresh(false);render();
+  m.textContent=lost.length?'Ficha carregada, mas estes nomes não existem nas listas deste criador: '+lost.join(', ')+'.':'Ficha carregada!';m.className='msg'+(lost.length?'':' ok')
+ }catch(x){m.textContent=x.message;m.className='msg'}};
+
+/* início */
+refresh(true);render();
+})();
+</script>
+</body>
+</html>
