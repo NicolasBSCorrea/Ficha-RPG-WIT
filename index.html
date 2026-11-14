@@ -235,7 +235,7 @@ label{text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;color:var(-
 <body>
 <header class="top"><div class="wrap">
   <div class="logo">RPG <span>WIT</span> · Fichas</div>
-  <span class="hint" style="margin:0">Criador de fichas · v1.0</span>
+  <div class="row"><span class="hint" style="margin:0">Criador de fichas · v1.2</span><a class="btn ghost sm" href="../" style="text-decoration:none;margin:0">← Voltar ao RPG WIT</a></div>
 </div></header>
 <div class="wrap" style="padding-top:1.2rem">
 <div class="cg">
@@ -245,6 +245,7 @@ label{text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;color:var(-
   <div class="card">
     <h2>Dados do personagem</h2>
     <div class="fld"><label for="fChar">Nome do personagem</label><div class="hint">Como o personagem se chama no mundo do jogo.</div><input id="fChar" maxlength="40" placeholder="Ex.: Alfredo"></div>
+    <div class="fld"><label for="fPlayer">Nome do jogador</label><div class="hint">Nome real de quem joga com este personagem, para saber quem é quem.</div><input id="fPlayer" maxlength="40" placeholder="Ex.: Maria"></div>
     <div class="g3">
       <div class="fld"><label for="fAge">Idade</label><div class="hint">Idade do personagem.</div><input id="fAge" maxlength="10" inputmode="numeric" placeholder="32"></div>
       <div class="fld"><label for="fRace">Raça</label><div class="hint">Pode ser fictícia.</div><input id="fRace" maxlength="30" placeholder="Ogro"></div>
@@ -343,19 +344,19 @@ function refresh(trim){var f=fnow(),Lm=cnt(f);
   var b=$('cnt-'+k);b.textContent=on.length+' / '+Lm[k];b.className='badge'+(on.length===Lm[k]?' ok':'')});
  $('fnDesc').textContent=FN[f]}
 function data(){var f=fnow(),mx=maxHp(f),hv=$('fHp').value,hp=hv===''?mx:Math.max(0,Math.min(mx,Math.round(+hv)||0));
- return{n:$('fChar').value.trim(),i:$('fAge').value.trim(),r:$('fRace').value.trim(),f:f,h:$('fHist').value.trim(),l:$('fFight').value.trim(),c:g('c'),s:g('s'),a:g('a'),w:g('w')[0]||'',it:g('i'),hp:hp}}
+ return{n:$('fChar').value.trim(),p:$('fPlayer').value.trim(),i:$('fAge').value.trim(),r:$('fRace').value.trim(),f:f,h:$('fHist').value.trim(),l:$('fFight').value.trim(),c:g('c'),s:g('s'),a:g('a'),w:g('w')[0]||'',it:g('i'),hp:hp}}
 
 /* ===== código de exportação =====
    Formato:  WIT1.<payload>.<verificação>
    payload     = JSON em UTF-8 codificado em Base64 URL-safe (sem "=")
    verificação = hash FNV-1a de 32 bits (8 dígitos hexadecimais) calculado sobre o payload
-   JSON: {v:1, n:nome, i:idade, r:raça, f:função, h:história, l:como luta,
+   JSON: {v:1, n:nome, p:jogador (opcional), i:idade, r:raça, f:função, h:história, l:como luta,
           c:[ações de combate], s:[ações de suporte], a:[ações de aventura],
           w:arma, it:[itens], hp:corações atuais}                                   */
 function fnv(s){var h=0x811c9dc5;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return ('00000000'+h.toString(16)).slice(-8)}
 function b64u(s){var b=new TextEncoder().encode(s),r='';b.forEach(function(x){r+=String.fromCharCode(x)});return btoa(r).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
 function unb64u(p){p=p.replace(/-/g,'+').replace(/_/g,'/');while(p.length%4)p+='=';var s=atob(p),b=new Uint8Array(s.length);for(var i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return new TextDecoder().decode(b)}
-function encode(d){var p=b64u(JSON.stringify({v:1,n:d.n,i:d.i,r:d.r,f:d.f,h:d.h,l:d.l,c:d.c,s:d.s,a:d.a,w:d.w,it:d.it,hp:d.hp}));return 'WIT1.'+p+'.'+fnv(p)}
+function encode(d){var p=b64u(JSON.stringify({v:1,n:d.n,p:d.p,i:d.i,r:d.r,f:d.f,h:d.h,l:d.l,c:d.c,s:d.s,a:d.a,w:d.w,it:d.it,hp:d.hp}));return 'WIT1.'+p+'.'+fnv(p)}
 function decode(code){code=String(code||'').replace(/\s+/g,'');
  var m=/^WIT1\.([A-Za-z0-9_-]+)\.([0-9a-f]{8})$/.exec(code);if(!m)throw new Error('Código inválido: formato não reconhecido.');
  if(fnv(m[1])!==m[2])throw new Error('Código inválido: ele foi alterado ou está incompleto.');
@@ -365,7 +366,7 @@ function decode(code){code=String(code||'').replace(/\s+/g,'');
  function A(v,max){if(!Array.isArray(v)||v.length>max)throw new Error('Código inválido: lista fora do limite da função.');return v.map(function(x){return S(x,80)})}
  if(FUNCS.indexOf(o.f)<0)throw new Error('Código inválido: função desconhecida.');
  var L=cnt(o.f),mx=maxHp(o.f);
- var d={n:S(o.n,40),i:S(o.i,10),r:S(o.r,30),f:o.f,h:S(o.h,600),l:S(o.l,120),c:A(o.c,L.c),s:A(o.s,L.s),a:A(o.a,L.a),w:S(o.w,80),it:A(o.it,L.i),hp:Math.round(+o.hp)};
+ var d={n:S(o.n,40),p:(o.p==null?'':S(o.p,40)),i:S(o.i,10),r:S(o.r,30),f:o.f,h:S(o.h,600),l:S(o.l,120),c:A(o.c,L.c),s:A(o.s,L.s),a:A(o.a,L.a),w:S(o.w,80),it:A(o.it,L.i),hp:Math.round(+o.hp)};
  if(!(d.hp>=0&&d.hp<=mx))throw new Error('Código inválido: corações fora do limite.');
  if(!d.n)throw new Error('Código inválido: sem nome de personagem.');
  return d}
@@ -379,7 +380,7 @@ function actCol(title,ico,arr,n){var h='<div class="sec"><div class="st">'+ico+'
 function sheetHtml(d){var L=cnt(d.f),mx=maxHp(d.f),hs='';for(var k=0;k<mx;k++)hs+=heart(k<d.hp);
  var its='';for(var k=0;k<2;k++)its+=d.it[k]?'<div class="act"><b>▢ '+esc(d.it[k])+'</b><span>'+esc(DESC[d.it[k]]||'')+'</span></div>':'<div class="act em"></div>';
  return '<div class="fr"><div class="top"><div class="t1">RPG <b>WIT</b></div><div class="t2">FICHA DE PERSONAGEM</div></div>'
- +'<div class="id"><div class="pic">'+(PIC?'<img src="'+PIC+'" alt="">':FI[d.f])+'</div><div class="flds"><div class="bx"><small>Nome do personagem</small><div class="v big">'+esc(d.n)+'</div></div><div class="r3"><div class="bx"><small>Idade</small><div class="v">'+esc(d.i)+'</div></div><div class="bx"><small>Raça</small><div class="v">'+esc(d.r)+'</div></div><div class="bx"><small>Função</small><div class="v">'+FI[d.f]+' '+d.f+'</div></div></div></div></div>'
+ +'<div class="id"><div class="pic">'+(PIC?'<img src="'+PIC+'" alt="">':FI[d.f])+'</div><div class="flds"><div class="bx"><small>Nome do personagem</small><div class="v big">'+esc(d.n)+'</div></div><div class="r3"><div class="bx"><small>Idade</small><div class="v">'+esc(d.i)+'</div></div><div class="bx"><small>Raça</small><div class="v">'+esc(d.r)+'</div></div><div class="bx"><small>Função</small><div class="v">'+FI[d.f]+' '+d.f+'</div></div></div>'+(d.p?'<div class="bx"><small>Jogador</small><div class="v">'+esc(d.p)+'</div></div>':'')+'</div></div>'
  +'<div class="sec"><div class="st">Pontos de vida</div><div class="cn"><div class="hrs">'+hs+'</div><div style="font-size:10.5px;color:#4a4023;font-style:italic;margin-top:3px">Todos começam com 3 corações (Guerreiro: 4). Quando um ataque inimigo acerta, perde 1 coração.</div></div></div>'
  +'<div class="sec"><div class="st">Função</div><div class="cn">'+esc(FN[d.f])+'</div></div>'
  +'<div class="cols">'+actCol('Combate','⚔️',d.c,L.c)+actCol('Suporte','💚',d.s,L.s)+actCol('Aventura','🧭',d.a,L.a)+'</div>'
@@ -442,7 +443,7 @@ $('bTxt').onclick=function(){var t=$('code').value;if(!t)return msg('Digite o no
 /* ===== carregar de um código ===== */
 $('bLoad').onclick=function(){var m=$('loadMsg');
  try{var d=decode($('codeIn').value);
-  $('fChar').value=d.n;$('fAge').value=d.i;$('fRace').value=d.r;$('fHist').value=d.h;$('fFight').value=d.l;$('fHp').value=d.hp;
+  $('fChar').value=d.n;$('fPlayer').value=d.p||'';$('fAge').value=d.i;$('fRace').value=d.r;$('fHist').value=d.h;$('fFight').value=d.l;$('fHp').value=d.hp;
   document.querySelector('input[name="fFn"][value="'+d.f+'"]').checked=true;
   var lost=[];[['c',d.c],['s',d.s],['a',d.a],['w',d.w?[d.w]:[]],['i',d.it]].forEach(function(p){var bx=boxes(p[0]);bx.forEach(function(x){x.checked=false});p[1].forEach(function(v){var x=bx.filter(function(y){return y.value===v})[0];if(x)x.checked=true;else lost.push(v)})});
   refresh(false);render();
